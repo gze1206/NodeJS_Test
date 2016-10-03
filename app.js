@@ -60,8 +60,8 @@ app.get('/', function (req,res) {
     data.save(function (err) {
       if(err) return console.log("Data ERROR : ", err);
       res.render('my_first_ejs',data);
-    })
-  })
+    });
+  });
 });
 
 app.get('/reset', function (req,res) {
