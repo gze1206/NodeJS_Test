@@ -13,15 +13,15 @@
 
 <!-- views/posts/index.ejs -->
 <div class="new">
-  <h3>New Post</h3>
+  <h3>글 작성</h3>
   <form class="posts_form" action="/posts" method="post">
-    <label>Title</label>
+    <label>제목</label>
     <input type="text" name="post[title]" value="">
-    <label>Body</label>
+    <label>본문</label>
     <textarea name="post[body]"></textarea>
-    <button type="submit">Submit</button>
+    <button type="submit">등록하기</button>
   </form>
-  <a href="/posts"><button>Back</button><a>
+  <a href="javascript:history.back()"><button>뒤로가기</button>
 </div>
 
 <!-- main end -->

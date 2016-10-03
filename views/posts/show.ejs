@@ -14,25 +14,25 @@
 <!-- views/posts/show.ejs -->
 <div class="show">
   <h3><%= data.title %></h3>
-  <div class="time">Created at <br>
+  <div class="time">작성일 <br>
     <%= data.createdAt.toLocaleDateString() %> <br>
     <%= data.createdAt.toLocaleTimeString() %>
   </div>
   <% if(data.updatedAt) { %>
-    <div class="time">Updated at <br>
+    <div class="time">수정일 <br>
       <%= data.updatedAt.toLocaleDateString() %> <br>
       <%= data.updatedAt.toLocaleTimeString() %>
     </div>
   <% } %>
   <p class="body"><%= data.body %><p>
   <div class="tools">
-    <a href="/posts/<%=data._id%>/edit"><button>Edit</button></a>
+    <a href="/posts/<%=data._id%>/edit"><button>수정하기</button></a>
     <!-- Delete button here -->
     <form class="btn_delete" action="/posts/<%=data._id%>?_method=delete" method="post">
-      <button type="submit">Delete</button>
+      <button type="submit">글 삭제</button>
     </form>
   </div>
-  <a href="/posts"><button>Back</button><a>
+  <a href="/posts"><button>뒤로가기</button>
 </div>
 
 <!-- main end -->
