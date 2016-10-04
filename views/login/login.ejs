@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../partials/head %>
+  </head>
+  <body>
+    <header>
+      <% include ../partials/header %>
+    </header>
+    <div class="login">
+    <% include partials/top %>
+<!-- main start-->
+
+<!-- views/posts/login.ejs -->
+<div>
+  <h3>로그인</h3>
+  <form class="login_form" action="/login" method="post">
+    <label>메일 주소</label>
+    <input type="text" name="email" value"<%= email %>">
+    <label>비밀번호</label>
+    <input type="text" name="password" value="">
+    <% loginError.forEach(function(e) { %>
+      <p class="error_message"><%= e%></p>
+    <% }) %>
+    <button class="submit_btn" type="submit">OK</button>
+  </form>
+  <a href="javascript:history.back()"><button>뒤로</button>
+</div>
+
+<!-- main end -->
+    </div><!--login end -->
+    <footer>
+      <% include ../partials/footer %>
+    </footer>
+  </body>
+</html>

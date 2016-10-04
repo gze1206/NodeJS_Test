@@ -2,6 +2,13 @@
 <html>
   <head>
     <% include ../partials/head %>
+    <% if(user) {%>
+      <a href="/logout" class="float_right"><button>로그아웃</button></a>
+      <a href="/users/<%= user._id %>" class="float_right"><button><%= user.nickname %> 정보 보기</button></a>
+    <% } else { %>
+        <a href="/login" class="float_right"><button>로그인</button></a>
+        <a href="/users/new" class="float_right"><button>회원 가입</button></a>
+    <% } %>
   </head>
   <body>
     <header>

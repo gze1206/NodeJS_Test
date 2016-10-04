@@ -85,7 +85,7 @@ passport.use('local-login',
   )
 );
 
-//set home routes
+//홈 루트 설정
 app.get('/', function (req, res) {
     res.redirect('/posts');
 });
@@ -116,11 +116,68 @@ app.get('/logout', function (req, res) {
     res.redirect('/');
 });
 
+//유저 루트 설정
+app.get('/users/new', function (req, res) {
+    res.render('users/new', {
+        formData: req.flash('formData')[0],
+        emailError: req.flash('emailError')[0],
+        nicknameError: req.flash('nicknameError')[0],
+        passwordError: req.flash('passwordError')[0]
+    });
+});     //유저 생성 뷰
+
+app.post('/users', checkUserRegValidation, function (req, res, next) {
+    User.create(req.body.user, function (err, user) {
+        if (err) return res.json({ success: false, message: err });
+        res.redirect('/login');
+    });
+});     //유저 생성
+
+app.get('/users/:id', function (req, res) {
+    User.findById(req.params.id, function (err, user) {
+        if (err) return res.json({ success: false, message: err });
+        res.render("users/show", { user: user });
+    });
+});     //유저 보기
+
+app.get('users/:id/edit', function (req, res) {
+    User.findById(req.params.id, function (err, user) {
+        if (err) return res.json({ success: false, message: err });
+        res.render("users/edit", {
+            user: user,
+            formData: req.flash('formData')[0],
+            emailError: req.flash('emailError')[0],
+            nicknameError: req.flash('nicknameError')[0],
+            passwordError: req.flash('passwordError')[0]
+        });
+    });
+});     //유저 정보 수정
+
+app.put('users/:id', checkUserRegValidation, function (req, res) {
+    User.findById(req.params.id, req.body.user, function (err, user) {
+        if (err) return res.json({ success: false, message: err });
+        if (req.body.user.password == user.password) {
+            if (req.body.user.newPassword) {
+                req.body.user.password = req.body.user.newPassword;
+            } else {
+                delete req.body.user.password;
+            }
+            User.findByIdAndUpdate(req.params.id, req.body.user, function (err, user) {
+                if (err) return res.json({ success: false, message: err });
+                res.redirect('/users/' + rq.params.id);
+            });
+        } else {
+            req.flash("formData", req.body.user);
+            req.flash("passwordError", "- 존재하지 않는 비밀번호");
+        }
+    });
+});     //유저 정보 갱신
+
 // 루트 설정
 app.get('/posts', function (req, res) {
     Post.find({}).sort('-createdAt').exec(function (err, posts) {
         if (err) return res.json({ success: false, message: err });
-        res.render("posts/index", { data: posts });
+        res.render("posts/index", { data: posts, user: req.user });
     });
 });   //인덱스
 
@@ -164,7 +221,42 @@ app.delete('/posts/:id', function (req, res) {
     });
 });   //게시글 삭제
 
-// start server
+//함수
+function checkUserRegValidation(req, res, next) {
+    var isValid = true;
+
+    async.waterfall(
+        [function (callback) {
+            User.findOne({ email: req.body.user.email, _id: { $ne: mongoose.Types.ObjectId(req.params.id) } },
+            function (err, user) {
+                if (user) {
+                    isValid = false;
+                    req.flash("emailError", "- 이 메일주소는 이미 사용되고 있습니다.");
+                }
+                callback(null, isValid);
+            });
+        }, function (isValid, callback) {
+            User.findOne({ nickname: req.body.user.nickname, _id: { $ne: mongoose.Types.ObjectId(req.params.id) } },
+                function (err, user) {
+                    if (user) {
+                        ifValid = false;
+                        req.flash("nicknameError", "- 이 닉네임은 이미 사용되고 있습니다.");
+                    }
+                    callback(null, isValid);
+                });
+        }], function (err, isValid) {
+            if (err) return res.json({ success: false, message: err });
+            if (isValid) {
+                return next();
+            } else {
+                req.flash("formData", rq.body.user);
+                res.redirect("back");
+            }
+        }
+    );
+}
+
+// 서버 가동
 app.listen(3000, function () {
     console.log('Server On!');
 });

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../partials/head %>
+  </head>
+  <body>
+    <header>
+      <% include ../partials/header %>
+    </header>
+    <div class="users">
+    <% include partials/top %>
+<!-- main start-->
+
+<!-- views/posts/index.ejs -->
+<div class="show">
+  <h3>유저 정보</h3>
+  <div class="content">
+    <p class="user_info">메일 주소<small> : <%= user.email %></small></p>
+    <p class="user_info">닉네임<small> : <%= user.nickname %></small></p>
+    <a href="/users/<%=user._id%>/edit"><button>수정</button></a>
+  </div>
+  <a href="/"><button>뒤로가기</button>
+</div>
+
+<!-- main end -->
+    </div><!--posts end -->
+    <footer>
+      <% include ../partials/footer %>
+    </footer>
+  </body>
+</html>
