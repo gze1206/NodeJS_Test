@@ -10,19 +10,19 @@
     <div class="users">
 <!-- main start-->
 
-<!-- views/posts/index.ejs -->
+<!-- views/users/new.ejs -->
 <div class="new">
   <h3>회원가입</h3>
   <form id="create_user" class="users_form" action="/users" method="post">
-    <label>메일주소* <span id="email_error" class="error_message"><%= emailError?emailError:"" %></span></label>
+    <label>메일 주소* <span id="email_error" class="error_message"><%= emailError?emailError:"" %></span></label>
     <input type="text" id="email" name="user[email]" value="<%= formData?formData.email:"" %>">
-    <label>닉네임* <span id="mickname_error" class="error_message"><%= nicknameError?nicknameError:"" %></span></label>
+    <label>닉네임* <span id="nickname_error" class="error_message"><%= nicknameError?nicknameError:"" %></span></label>
     <input type="text" id="nickname" name="user[nickname]" value="<%= formData?formData.nickname:"" %>">
     <label>비밀번호* <span id="password_error" class="error_message"><%= passwordError?passwordError:"" %></span></label>
     <input type="text" id="password" name="user[password]" value="">
-    <label>비밀번호 재입력* <span id="password_confirmation_error" class="error_message"><%= passwordError?passwordError:"" %></span></label>
+    <label>비밀번호 재입력* <span id="password_confirmation_error" class="error_message"></span></label>
     <input type="text" id="password_confirmation" name="user[passwordConfirmation]" value="">
-    <p><small>* : 필수 사항. 그냥 다 입력해라.</small></p>
+    <p><small>* : 필수입력 사항. </small></p>
     <input type="button" class="submit_btn" value="가입">
   </form>
   <a href="javascript:history.back()"><button>뒤로가기</button>
@@ -31,7 +31,7 @@
 <script type="text/javascript" src="/js/userform.js"></script>
 
 <!-- main end -->
-    </div><!--posts end -->
+    </div><!--users end -->
     <footer>
       <% include ../partials/footer %>
     </footer>

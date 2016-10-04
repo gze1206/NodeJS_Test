@@ -1,4 +1,4 @@
-// ¸ğµâ ¿¬°á
+ï»¿// ëª¨ë“ˆ ì—°ê²°
 var express = require('express');
 var app = express();
 var path = require('path');
@@ -10,7 +10,7 @@ var async = require('async');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 
-// DB Á¢¼Ó
+// DB ì ‘ì†
 mongoose.connect(process.env.MONGO_DB);
 var db = mongoose.connection;
 db.once("open", function () {
@@ -20,7 +20,7 @@ db.on("error", function (err) {
     console.log("DB ERROR :", err);
 });
 
-// ¸ğµ¨ ¼¼ÆÃ
+// ëª¨ë¸ ì„¸íŒ…
 var postSchema = mongoose.Schema({
     title: { type: String, required: true },
     body: { type: String, required: true },
@@ -37,10 +37,10 @@ var userSchema = mongoose.Schema({
 });
 var User = mongoose.model('user', userSchema);
 
-// ºä ¼¼ÆÃ(µ¿Àû »çÀÌÆ®)
+// ë·° ì„¸íŒ…(ë™ì  ì‚¬ì´íŠ¸)
 app.set("view engine", 'ejs');
 
-// ¹Ìµé¿ş¾î ¼³Á¤
+// ë¯¸ë“¤ì›¨ì–´ ì„¤ì •
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -73,11 +73,11 @@ passport.use('local-login',
             if (err) return done(err);
             if (!user) {
                 req.flash("email", req.body.email);
-                return done(null, false, req.flash('loginError', 'Á¸ÀçÇÏÁö ¾Ê´Â ¸ŞÀÏ ÁÖ¼ÒÀÔ´Ï´Ù.'));
+                return done(null, false, req.flash('loginError', "ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ë©”ì¼ ì£¼ì†Œì…ë‹ˆë‹¤."));
             }
             if (user.password != password) {
                 req.flash("email", rqe.body.email);
-                return done(null, false, req.flash('loginError', 'ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.'));
+                return done(null, false, req.flash('loginError', 'ë¹„ë°€ë²ˆí˜¸ê°€ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.'));
             }
             return done(null, user);
         });
@@ -85,7 +85,7 @@ passport.use('local-login',
   )
 );
 
-//È¨ ·çÆ® ¼³Á¤
+//í™ˆ ë£¨íŠ¸ ì„¤ì •
 app.get('/', function (req, res) {
     res.redirect('/posts');
 });
@@ -99,7 +99,7 @@ app.post('/login',
         req.flash("email");
         if (req.body.email.length === 0 || req.body.password.length === 0) {
             req.flash("email", req.body.email);
-            req.flash("loginError", "¸ŞÀÏÁÖ¼Ò¿Í ºñ¹Ğ¹øÈ£¸¦ ¸ğµÎ ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+            req.flash("loginError", "ë©”ì¼ì£¼ì†Œì™€ ë¹„ë°€ë²ˆí˜¸ë¥¼ ëª¨ë‘ ì…ë ¥í•´ì£¼ì„¸ìš”.");
             res.redirect('/login');
         } else {
             next();
@@ -116,7 +116,7 @@ app.get('/logout', function (req, res) {
     res.redirect('/');
 });
 
-//À¯Àú ·çÆ® ¼³Á¤
+//ìœ ì € ë£¨íŠ¸ ì„¤ì •
 app.get('/users/new', function (req, res) {
     res.render('users/new', {
         formData: req.flash('formData')[0],
@@ -124,23 +124,23 @@ app.get('/users/new', function (req, res) {
         nicknameError: req.flash('nicknameError')[0],
         passwordError: req.flash('passwordError')[0]
     });
-});     //À¯Àú »ı¼º ºä
+});     //ìœ ì € ìƒì„± ë·°
 
 app.post('/users', checkUserRegValidation, function (req, res, next) {
     User.create(req.body.user, function (err, user) {
         if (err) return res.json({ success: false, message: err });
         res.redirect('/login');
     });
-});     //À¯Àú »ı¼º
+});     //ìœ ì € ìƒì„±
 
 app.get('/users/:id', function (req, res) {
     User.findById(req.params.id, function (err, user) {
         if (err) return res.json({ success: false, message: err });
         res.render("users/show", { user: user });
     });
-});     //À¯Àú º¸±â
+});     //ìœ ì € ë³´ê¸°
 
-app.get('users/:id/edit', function (req, res) {
+app.get('/users/:id/edit', function (req, res) {
     User.findById(req.params.id, function (err, user) {
         if (err) return res.json({ success: false, message: err });
         res.render("users/edit", {
@@ -151,7 +151,7 @@ app.get('users/:id/edit', function (req, res) {
             passwordError: req.flash('passwordError')[0]
         });
     });
-});     //À¯Àú Á¤º¸ ¼öÁ¤
+});     //ìœ ì € ì •ë³´ ìˆ˜ì •
 
 app.put('users/:id', checkUserRegValidation, function (req, res) {
     User.findById(req.params.id, req.body.user, function (err, user) {
@@ -168,43 +168,43 @@ app.put('users/:id', checkUserRegValidation, function (req, res) {
             });
         } else {
             req.flash("formData", req.body.user);
-            req.flash("passwordError", "- Á¸ÀçÇÏÁö ¾Ê´Â ºñ¹Ğ¹øÈ£");
+            req.flash("passwordError", "- ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ë¹„ë°€ë²ˆí˜¸");
         }
     });
-});     //À¯Àú Á¤º¸ °»½Å
+});     //ìœ ì € ì •ë³´ ê°±ì‹ 
 
-// ·çÆ® ¼³Á¤
+// ë£¨íŠ¸ ì„¤ì •
 app.get('/posts', function (req, res) {
     Post.find({}).sort('-createdAt').exec(function (err, posts) {
         if (err) return res.json({ success: false, message: err });
         res.render("posts/index", { data: posts, user: req.user });
     });
-});   //ÀÎµ¦½º
+});   //ì¸ë±ìŠ¤
 
 app.get('/posts/new', function (req, res) {
     res.render("posts/new");
-});   //»õ·Î ÀÛ¼º
+});   //ìƒˆë¡œ ì‘ì„±
 
 app.post('/posts', function (req, res) {
     Post.create(req.body.post, function (err, post) {
         if (err) return res.json({ success: false, message: err });
         res.redirect('/posts');
     });
-});   //°Ô½Ã±Û »ı¼º
+});   //ê²Œì‹œê¸€ ìƒì„±
 
 app.get('/posts/:id', function (req, res) {
     Post.findById(req.params.id, function (err, post) {
         if (err) return res.json({ success: false, message: err });
         res.render("posts/show", { data: post });
     });
-});   //°Ô½Ã±Û ¿­¶÷
+});   //ê²Œì‹œê¸€ ì—´ëŒ
 
 app.get('/posts/:id/edit', function (req, res) {
     Post.findById(req.params.id, function (err, post) {
         if (err) return res.json({ success: false, message: err });
         res.render("posts/edit", { data: post });
     });
-});   //°Ô½Ã±Û ¼öÁ¤
+});   //ê²Œì‹œê¸€ ìˆ˜ì •
 
 app.put('/posts/:id', function (req, res) {
     req.body.post.updatedAt = Date.now();
@@ -212,16 +212,16 @@ app.put('/posts/:id', function (req, res) {
         if (err) return res.json({ success: false, message: err });
         res.redirect('/posts/' + req.params.id);
     });
-});   //°Ô½Ã±Û °»½Å
+});   //ê²Œì‹œê¸€ ê°±ì‹ 
 
 app.delete('/posts/:id', function (req, res) {
     Post.findByIdAndRemove(req.params.id, function (err, post) {
         if (err) return res.json({ success: false, message: err });
         res.redirect('/posts');
     });
-});   //°Ô½Ã±Û »èÁ¦
+});   //ê²Œì‹œê¸€ ì‚­ì œ
 
-//ÇÔ¼ö
+//í•¨ìˆ˜
 function checkUserRegValidation(req, res, next) {
     var isValid = true;
 
@@ -231,7 +231,7 @@ function checkUserRegValidation(req, res, next) {
             function (err, user) {
                 if (user) {
                     isValid = false;
-                    req.flash("emailError", "- ÀÌ ¸ŞÀÏÁÖ¼Ò´Â ÀÌ¹Ì »ç¿ëµÇ°í ÀÖ½À´Ï´Ù.");
+                    req.flash("emailError", "- ì´ ë©”ì¼ì£¼ì†ŒëŠ” ì´ë¯¸ ì‚¬ìš©ë˜ê³  ìˆìŠµë‹ˆë‹¤.");
                 }
                 callback(null, isValid);
             });
@@ -240,7 +240,7 @@ function checkUserRegValidation(req, res, next) {
                 function (err, user) {
                     if (user) {
                         ifValid = false;
-                        req.flash("nicknameError", "- ÀÌ ´Ğ³×ÀÓÀº ÀÌ¹Ì »ç¿ëµÇ°í ÀÖ½À´Ï´Ù.");
+                        req.flash("nicknameError", "- ì´ ë‹‰ë„¤ì„ì€ ì´ë¯¸ ì‚¬ìš©ë˜ê³  ìˆìŠµë‹ˆë‹¤.");
                     }
                     callback(null, isValid);
                 });
@@ -256,7 +256,7 @@ function checkUserRegValidation(req, res, next) {
     );
 }
 
-// ¼­¹ö °¡µ¿
+// ì„œë²„ ê°€ë™
 app.listen(3000, function () {
     console.log('Server On!');
 });
