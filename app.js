@@ -29,12 +29,32 @@ var postSchema = mongoose.Schema({
 });
 var Post = mongoose.model('post', postSchema);
 
+var bcrypt = require("bcrypt-nodejs");
+
 var userSchema = mongoose.Schema({
     email: { type: String, required: true, unique: true },
     nickname: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }
 });
+
+userSchema.pre("save", function (next) {
+  var user = this;
+  if(!user.isModified("password")){
+    return next();
+  } else {
+    user.password = bcrypt.hashSync(user.password);
+    return next();
+  }
+});
+userSchema.methods.authenticate = function (password) {
+  var user = this;
+  return bcrypt.compareSync(password,user.password);
+};
+userSchema.methods.hash = function (password) {
+  return bcrypt.hashSync(password);
+};
+
 var User = mongoose.model('user', userSchema);
 
 // 뷰 세팅(동적 사이트)
@@ -75,8 +95,8 @@ passport.use('local-login',
                 req.flash("email", req.body.email);
                 return done(null, false, req.flash('loginError', "존재하지 않는 메일 주소입니다."));
             }
-            if (user.password != password) {
-                req.flash("email", rqe.body.email);
+            if (!user.authenticate(password)) {
+                req.flash("email", req.body.email);
                 return done(null, false, req.flash('loginError', '비밀번호가 일치하지 않습니다.'));
             }
             return done(null, user);
@@ -133,14 +153,15 @@ app.post('/users', checkUserRegValidation, function (req, res, next) {
     });
 });     //유저 생성
 
-app.get('/users/:id', function (req, res) {
+app.get('/users/:id', IsLoggedIn, function (req, res) {
     User.findById(req.params.id, function (err, user) {
         if (err) return res.json({ success: false, message: err });
         res.render("users/show", { user: user });
     });
 });     //유저 보기
 
-app.get('/users/:id/edit', function (req, res) {
+app.get('/users/:id/edit', IsLoggedIn, function (req, res) {
+  if (req.user._id != req.params.id) return res.json({success:false, message:"접근 거부"});
     User.findById(req.params.id, function (err, user) {
         if (err) return res.json({ success: false, message: err });
         res.render("users/edit", {
@@ -153,12 +174,13 @@ app.get('/users/:id/edit', function (req, res) {
     });
 });     //유저 정보 수정
 
-app.put('users/:id', checkUserRegValidation, function (req, res) {
+app.put('users/:id', IsLoggedIn, checkUserRegValidation, function (req, res) {
+  if (req.user._id != req.params.id) return res.json({success:false, message:"접근 거부"});
     User.findById(req.params.id, req.body.user, function (err, user) {
         if (err) return res.json({ success: false, message: err });
-        if (req.body.user.password == user.password) {
+        if (user.authenticate(req.body.user.password)) {
             if (req.body.user.newPassword) {
-                req.body.user.password = req.body.user.newPassword;
+                req.body.user.password = user.hash(req.body.user.newPassword);
             } else {
                 delete req.body.user.password;
             }
@@ -222,6 +244,13 @@ app.delete('/posts/:id', function (req, res) {
 });   //게시글 삭제
 
 //함수
+function IsLoggedIn(req,res,next) {
+  if (req.isAuthenticated()){
+    return next();
+  }
+  res.redirect('/');
+}
+
 function checkUserRegValidation(req, res, next) {
     var isValid = true;
 
@@ -249,7 +278,7 @@ function checkUserRegValidation(req, res, next) {
             if (isValid) {
                 return next();
             } else {
-                req.flash("formData", rq.body.user);
+                req.flash("formData", req.body.user);
                 res.redirect("back");
             }
         }
